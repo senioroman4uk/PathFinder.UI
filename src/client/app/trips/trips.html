@@ -1,0 +1,86 @@
+<section id="trips-view" class="mainbar">
+    <section class="matter">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <form class="form-horizontal" ng-submit="vm.createTrip(vm.trip)">
+                        <div class="form-group">
+                            <label class="control-label">Start point</label>
+                            <input class="form-control" type="text"
+                                   ng-model="vm.startAddress"
+                                   places-auto-complete
+                                   component-restrictions="{country:'ukr'}"
+                                   on-place-changed="vm.startChanged()"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">End point</label>
+                            <input class="form-control" type="text"
+                                   ng-model="vm.endAddress"
+                                   places-auto-complete
+                                   component-restrictions="{country:'ukr'}"
+                                   on-place-changed="vm.endChanged()"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Price</label>
+                            <input class="form-control" ng-model="vm.trip.price">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Departure date</label>
+                            <div class="input-group">
+                                <input class="form-control" style="width: 99%" uib-datepicker-popup datepicker-options="vm.tripOptions"
+                                       ng-model="vm.trip.departureDate" is-open="vm.departurePickerOpen" close-text="Close">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" ng-click="vm.openDepartureDatePicker()">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Regular</label>
+                            <input type="checkbox" ng-model="vm.trip.regular">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">With returning</label>
+                            <input type="checkbox" ng-model="vm.trip.withReturning">
+                        </div>
+                        <div class="form-group" ng-show="vm.trip.withReturning">
+                            <label class="control-label">Returning date</label>
+                            <div class="input-group">
+                                <input class="form-control" style="width: 99%" uib-datepicker-popup datepicker-options="vm.tripOptions"
+                                       ng-model="vm.trip.returningDate" is-open="vm.returningDatePickerOpen" close-text="Close">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" ng-click="vm.openReturningDatePicker()">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <button class="btn btn-lg btn-primary" type="submit">Create trip</button>
+                    </form>
+                </div>
+                <div class="col-md-8">
+                    <!--panel="directions-panel"-->
+                    <ng-map zoom="{{vm.mapProperties.zoom}}" center="{{vm.mapProperties.center}}" style="height:90%">
+                        <directions
+                            draggable="true"
+                            on-directions_changed="vm.dragEnd()"
+
+                            travel-mode="DRIVING"
+                            waypoints="{{vm.wayPoints}}"
+                            origin="{{vm.trip.startPoint.geometry.location}}"
+                            destination="{{vm.trip.endPoint.geometry.location}}">
+                        </directions>
+                    </ng-map>
+
+
+
+
+                    <!--<ui-gmap-google-map center='vm.map.center' zoom='vm.map.zoom'>-->
+                        <!--<ui-gmap-markers models="vm.markers"coords="'self'"></ui-gmap-markers>-->
+                    <!--</ui-gmap-google-map>-->
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
