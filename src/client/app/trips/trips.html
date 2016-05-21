@@ -2,10 +2,11 @@
     <section class="matter">
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
+                <h1>Create trip</h1>
+                <div class="col-md-6">
                     <form class="form-horizontal" ng-submit="vm.createTrip(vm.trip)">
                         <div class="form-group">
-                            <label class="control-label">Start point</label>
+                            <label class="control-label">Origin</label>
                             <input class="form-control" type="text"
                                    ng-model="vm.startAddress"
                                    places-auto-complete
@@ -13,10 +14,11 @@
                                    on-place-changed="vm.startChanged()"/>
                         </div>
                         <div class="form-group">
-                            <label class="control-label">End point</label>
+                            <label class="control-label">Destination</label>
                             <input class="form-control" type="text"
                                    ng-model="vm.endAddress"
                                    places-auto-complete
+                                   types="['address']"
                                    component-restrictions="{country:'ukr'}"
                                    on-place-changed="vm.endChanged()"/>
                         </div>
@@ -36,49 +38,36 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label">Regular</label>
-                            <input type="checkbox" ng-model="vm.trip.regular">
+                        <div>
+                            <h2>Way points</h2>
+                            <ul dnd-list="vm.wayPoints" class="list-unstyled">
+                                <li ng-repeat="waypoint in vm.trip.wayPoints"
+                                    dnd-draggable="waypoint"
+                                    dnd-moved="vm.wayPoints.splice($index, 1)">
+                                    <div class="form-group">
+                                        <label class="control-label">Way point #{{$index + 1}}</label>
+                                        <input class="form-control"
+                                               ng-model="waypoint.text"
+                                               places-auto-complete
+                                               on-place-changed="vm.changed(waypoint)"
+                                               component-restrictions="{country:'ukr'}">
+                                    </div>
+                                </li>
+                            </ul>
+                            <button class="btn btn-lg btn-success" ng-click="vm.addWaypoint()">Add waypoint</button>
+                            <br>
+                            <br>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label">With returning</label>
-                            <input type="checkbox" ng-model="vm.trip.withReturning">
-                        </div>
-                        <div class="form-group" ng-show="vm.trip.withReturning">
-                            <label class="control-label">Returning date</label>
-                            <div class="input-group">
-                                <input class="form-control" style="width: 99%" uib-datepicker-popup datepicker-options="vm.tripOptions"
-                                       ng-model="vm.trip.returningDate" is-open="vm.returningDatePickerOpen" close-text="Close">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" ng-click="vm.openReturningDatePicker()">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                        <button class="btn btn-lg btn-primary" type="submit">Create trip</button>
+                        <button class="btn btn-lg btn-primary pull-right" type="submit">Create trip</button>
                     </form>
                 </div>
-                <div class="col-md-8">
-                    <!--panel="directions-panel"-->
+                <div class="col-md-6">
                     <ng-map zoom="{{vm.mapProperties.zoom}}" center="{{vm.mapProperties.center}}" style="height:90%">
-                        <directions
-                            draggable="true"
-                            on-directions_changed="vm.dragEnd()"
-
-                            travel-mode="DRIVING"
-                            waypoints="{{vm.wayPoints}}"
-                            origin="{{vm.trip.startPoint.geometry.location}}"
-                            destination="{{vm.trip.endPoint.geometry.location}}">
-                        </directions>
+                        <marker position="{{vm.trip.startPoint.geometry.location}}"></marker>
+                        <marker position="{{wayPoint.place.geometry.location}}"
+                                ng-repeat="wayPoint in vm.trip.wayPoints"></marker>
+                        <marker position="{{vm.trip.endPoint.geometry.location}}"></marker>
                     </ng-map>
-
-
-
-
-                    <!--<ui-gmap-google-map center='vm.map.center' zoom='vm.map.zoom'>-->
-                        <!--<ui-gmap-markers models="vm.markers"coords="'self'"></ui-gmap-markers>-->
-                    <!--</ui-gmap-google-map>-->
                 </div>
             </div>
         </div>

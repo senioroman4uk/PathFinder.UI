@@ -8,6 +8,7 @@
         'app.dashboard',
         'app.layout',
         'app.trips',
+        'dndLists',
         'google.places',
         'ngMap',
         'ui.bootstrap'

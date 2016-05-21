@@ -9,13 +9,14 @@
         .module('app.trips')
         .controller('TripsController', TripsController);
 
-    TripsController.$inject = ['$q', 'logger', 'NgMap', 'gmapsService'];
+    TripsController.$inject = ['$q', 'logger', 'NgMap', 'tripsService'];
     /* @ngInject */
-    function TripsController($q, logger, NgMap, gmapsService) {
+    function TripsController($q, logger, NgMap, tripsService) {
         var vm = this;
-        var geocoder = new google.maps.Geocoder();
 
-        vm.trip = {};
+        vm.trip = {
+            wayPoints: []
+        };
         vm.dateOptions = {
             dateDisabled: false,
             formatYear: 'yy',
@@ -23,8 +24,6 @@
             minDate: new Date(),
             startingDay: 1
         };
-        vm.markers = [];
-        vm.wayPoints = [];
 
         vm.title = 'PathFinder';
         vm.startChanged = function () {
@@ -35,20 +34,12 @@
             vm.trip.endPoint = this.getPlace();
         };
 
-        vm.dragEnd = function () {
-            // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-            var length = this.directions.routes[0].overview_path.length;
-            var start = this.directions.routes[0].overview_path[0];
-            var end = this.directions.routes[0].overview_path[length - 1];
-            // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+        vm.changed = function (_, waypoint) {
+            waypoint.place = this.getPlace();
+        };
 
-            $q.all([
-                gmapsService.getAddress({lat: start.lat(), lng: start.lng()}),
-                gmapsService.getAddress({lat: end.lat(), lng: end.lng()})
-            ]).then(function (addresses) {
-                vm.startAddress = addresses[0];
-                vm.endAddress = addresses[1];
-            });
+        vm.addWaypoint = function () {
+            vm.trip.wayPoints.push({});
         };
 
         activate();
@@ -76,27 +67,10 @@
             });
         }
 
-        function watchCoordinates(markerIndex) {
-            return function (newValue, oldValue) {
-                var type = typeof newValue;
-                if (type !== 'object') {
-                    return;
-                }
-                console.log(newValue);
-
-                vm.markers[markerIndex] = {
-                    id: markerIndex,
-                    latitude: newValue.geometry.location.lat(),
-                    longitude: newValue.geometry.location.lng(),
-                    title: markerIndex
-                };
-            };
-        }
-
         vm.createTrip = function (trip) {
-            trip.directions = JSON.stringify(vm.ngMap.directionsRenderers[0].directions);
-            console.log(trip);
-            // console.log(trip);
+            tripsService.createTrip(trip).then(function () {
+                logger.success('Trip created successfully');
+            });
         };
 
         vm.openDepartureDatePicker = function () {
