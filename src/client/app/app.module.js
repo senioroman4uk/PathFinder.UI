@@ -12,6 +12,12 @@
         'google.places',
         'ngMap',
         'ui.bootstrap'
-    ]);
+    ]).config(config);
 
+    config.$inject = ['$httpProvider'];
+
+    function config($httpProvider) {
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    }
 })();

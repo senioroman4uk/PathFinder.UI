@@ -7,7 +7,7 @@
         .constant('toastr', toastr)
         .constant('moment', moment)
         .constant('routes', (function () {
-            var base = 'http://localhost:58877';
+            var base = 'http://localhost:58877/api/v1';
 
             var trips = '/trips';
 
